@@ -67,10 +67,11 @@ page:
     svg_close(doc)
     svg_error() -> cause
 
-The page's size is the drawing's own, in CSS pixels, not points. A render
-is the drawing scaled to fit the asked size, as an `<img>` of that size
-shows it: 8-bit RGBA, not premultiplied, transparent where nothing is
-drawn. The document copies the file in `svg_open`. A file that is no SVG
+The page's size is the drawing's own, in CSS pixels, not points: what its
+root gives, or the edges of what it draws, zero for a drawing of nothing. A
+render is the drawing stretched to the asked size, a viewBox fitting it as
+its preserveAspectRatio says: 8-bit RGBA, not premultiplied, transparent
+where nothing is drawn. The document copies the file in `svg_open`. A file that is no SVG
 traps, as does an image of no pixel or one past 2^26; `svg_error()` then
 names the `SvgError` of svg.h. The module has no raster decoder: PNG and
 JPEG images inside a drawing are left out.
