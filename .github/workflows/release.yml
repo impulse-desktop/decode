@@ -27,7 +27,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        module: [decode, decode.simd128, pdf, djvu, magic, svg]
+        module: [decode, decode.simd128, pdf, djvu, magic, svg, svg.simd128]
     steps:
       - name: Check out source
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -110,7 +110,7 @@ jobs:
         run: |
           set -eu
           cd "$RUNNER_TEMP/out"
-          modules="decode.wasm.zstd decode.simd128.wasm.zstd pdf.wasm.zstd djvu.wasm.zstd magic.wasm.zstd svg.wasm.zstd"
+          modules="decode.wasm.zstd decode.simd128.wasm.zstd pdf.wasm.zstd djvu.wasm.zstd magic.wasm.zstd svg.wasm.zstd svg.simd128.wasm.zstd"
           ls -la $modules
           last=$(gh release list --repo "$GITHUB_REPOSITORY" --limit 1000 --json tagName \
             --jq '[.[].tagName | select(test("^[1-9][0-9]*$")) | tonumber] | max // 0')
@@ -133,3 +133,4 @@ jobs:
             ${{ runner.temp }}/out/djvu.wasm.zstd
             ${{ runner.temp }}/out/magic.wasm.zstd
             ${{ runner.temp }}/out/svg.wasm.zstd
+            ${{ runner.temp }}/out/svg.simd128.wasm.zstd

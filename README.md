@@ -4,7 +4,7 @@ Decoders as pure WebAssembly modules, built by
 [ix](https://github.com/pg83/ix) for the `wasm32-none` target: each
 module imports nothing, exports `memory`, `malloc`, `free` and a few
 functions, and is proven pure and run through a loader by the build
-behind it. A release carries six:
+behind it. A release carries seven:
 
 | module | from | what it does |
 |---|---|---|
@@ -14,6 +14,7 @@ behind it. A release carries six:
 | `djvu.wasm` | `lib/djvulibre/wasm` | DjVuLibre: the same for a DjVu |
 | `magic.wasm` | `lib/magic/wasm` | libmagic with its compiled database: the MIME type of bytes |
 | `svg.wasm` | `lib/svg/wasm` | [impulse-desktop/svg](https://github.com/impulse-desktop/svg): a drawing as a one-page document |
+| `svg.simd128.wasm` | the same with `-msimd128` | the renderer's pixel kernels in v128; it draws byte for byte as `svg.wasm`, on a runtime with SIMD such as wasm2c |
 
 A host keeps an instance per worker, hands it whole files through the
 exported `malloc`, and reads results back out of linear memory. A trap
@@ -92,7 +93,7 @@ first call. 0 is a failure the library noticed itself, which
 
     ./build.sh MODULE OUT_DIR
 
-builds one of `decode`, `decode.simd128`, `pdf`, `djvu`, `magic`, `svg` through
+builds one of `decode`, `decode.simd128`, `pdf`, `djvu`, `magic`, `svg`, `svg.simd128` through
 IX at the revision pinned in `build.sh` and writes `OUT_DIR/MODULE.wasm.zstd`.
-The release workflow runs the six in parallel and publishes them as the
+The release workflow runs the seven in parallel and publishes them as the
 next numeric tag, with their sha256 sums in the notes.
