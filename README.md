@@ -74,10 +74,11 @@ render is the drawing stretched to the asked size, a viewBox fitting it as
 its preserveAspectRatio says: 8-bit RGBA, not premultiplied, transparent
 where nothing is drawn. The document copies the file in `svg_open`. A file that is no SVG
 traps, as does an image of no pixel or one past 2^26; `svg_error()` then
-names the `SvgError` of svg.h. The module has no raster decoder: PNG and
-JPEG images inside a drawing are left out. Nor has it a decompressor: an
-SVGZ file traps with `SVG_DECOMPRESS`, and a gzipped image inside a drawing
-is left out.
+names the `SvgError` of svg.h. The module carries its own decoders: SVGZ
+and gzipped images through zlib, and PNG, JPEG, WebP and GIF images inside
+a drawing, an animated one's first frame; other raster images are left
+out. An image that does not decode traps too, and `svg_error()` then says
+what its decoder said.
 
 ## magic
 
