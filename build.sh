@@ -5,21 +5,21 @@
 #
 #   ./build.sh MODULE OUT_DIR
 #
-#   decode          ImageMagick's decoders, lib/image/magick/wasm
-#   decode.simd128  the same with wasm simd128
-#   pdf             PDFium, lib/pdf/ium/wasm
-#   djvu            DjVuLibre, lib/djvulibre/wasm
-#   magic           libmagic, lib/magic/wasm
-#   svg             impulse-desktop/svg, lib/svg/wasm
-#   svg.simd128     the same with wasm simd128
+#   im                  ImageMagick's decoders, lib/image/magick/wasm
+#   im.simd128          the same with wasm simd128
+#   pdf                 PDFium, lib/pdf/ium/wasm
+#   djvu                DjVuLibre, lib/djvulibre/wasm
+#   magic               libmagic, lib/magic/wasm
+#   svg_simple          impulse-desktop/svg, lib/svg/wasm/simple
+#   svg_simple.simd128  the same with wasm simd128
 #
 # Needs the system build tools IX expects under all_system (clang, lld,
 # llvm, cmake, ninja, make, meson, perl, python3, pkg-config, m4, ...),
-# plus imagemagick (the decode module's tests use it) and zstd.
+# plus imagemagick (the im module's tests use it) and zstd.
 
 set -eu
 
-IX_REV=94cd6458e1b3eaea54de87d29750863e78480212
+IX_REV=ad2945ace52f8600593fc44ca7fd3af6a8978fb5
 IX_REPO=${IX_REPO:-https://github.com/pg83/ix}
 
 if [ "$#" -ne 2 ]; then
@@ -35,13 +35,13 @@ ix="$here/.ix"
 # the IX set that carries the module with its target, the flags the set
 # takes, and the variable the module's package exports its path in
 case $module in
-    decode)         set=set/wasm/decode; flags=""; path=IX_IMAGE_MAGICK_DECODE_WASM;;
-    decode.simd128) set=set/wasm/decode; flags="--simd128=1"; path=IX_IMAGE_MAGICK_DECODE_WASM;;
-    pdf)            set=set/wasm/pdf; flags=""; path=IX_PDFIUM_WASM;;
-    djvu)           set=set/wasm/djvu; flags=""; path=IX_DJVULIBRE_WASM;;
-    magic)          set=set/wasm/magic; flags=""; path=IX_MAGIC_WASM;;
-    svg)            set=set/wasm/svg; flags=""; path=IX_SVG_WASM;;
-    svg.simd128)    set=set/wasm/svg; flags="--simd128=1"; path=IX_SVG_WASM;;
+    im)                 set=set/wasm/decode; flags=""; path=IX_IMAGE_MAGICK_DECODE_WASM;;
+    im.simd128)         set=set/wasm/decode; flags="--simd128=1"; path=IX_IMAGE_MAGICK_DECODE_WASM;;
+    pdf)                set=set/wasm/pdf; flags=""; path=IX_PDFIUM_WASM;;
+    djvu)               set=set/wasm/djvu; flags=""; path=IX_DJVULIBRE_WASM;;
+    magic)              set=set/wasm/magic; flags=""; path=IX_MAGIC_WASM;;
+    svg_simple)         set=set/wasm/svg/simple; flags=""; path=IX_SVG_SIMPLE_WASM;;
+    svg_simple.simd128) set=set/wasm/svg/simple; flags="--simd128=1"; path=IX_SVG_SIMPLE_WASM;;
     *)
         echo "$0: no module named $module" >&2
         exit 2;;

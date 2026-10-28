@@ -8,13 +8,13 @@ behind it. A release carries seven:
 
 | module | from | what it does |
 |---|---|---|
-| `decode.wasm` | `lib/image/magick/wasm` | ImageMagick and its coders, one `decode` export |
-| `decode.simd128.wasm` | the same with `-msimd128` | JPEG XL decodes about three times faster on a runtime with SIMD, such as wasm2c with the generated C compiled for x86-64-v3 |
+| `im.wasm` | `lib/image/magick/wasm` | ImageMagick and its coders, one `decode` export |
+| `im.simd128.wasm` | the same with `-msimd128` | JPEG XL decodes about three times faster on a runtime with SIMD, such as wasm2c with the generated C compiled for x86-64-v3 |
 | `pdf.wasm` | `lib/pdf/ium/wasm` | PDFium: open a PDF from memory, count and measure its pages, render one |
 | `djvu.wasm` | `lib/djvulibre/wasm` | DjVuLibre: the same for a DjVu |
 | `magic.wasm` | `lib/magic/wasm` | libmagic with its compiled database: the MIME type of bytes |
-| `svg.wasm` | `lib/svg/wasm` | [impulse-desktop/svg](https://github.com/impulse-desktop/svg): a drawing as a one-page document |
-| `svg.simd128.wasm` | the same with `-msimd128` | the renderer's pixel kernels in v128; it draws byte for byte as `svg.wasm`, on a runtime with SIMD such as wasm2c |
+| `svg_simple.wasm` | `lib/svg/wasm/simple` | [impulse-desktop/svg](https://github.com/impulse-desktop/svg): a drawing as a one-page document |
+| `svg_simple.simd128.wasm` | the same with `-msimd128` | the renderer's pixel kernels in v128; it draws byte for byte as `svg_simple.wasm`, on a runtime with SIMD such as wasm2c |
 
 A host keeps an instance per worker, hands it whole files through the
 exported `malloc`, and reads results back out of linear memory. A trap
@@ -22,7 +22,7 @@ is a failed call; the instance is then dead, as any wasm instance, and
 the host makes another. Every module links with an 8 MB wasm stack and
 runs its static constructors on the first call of an instance.
 
-## decode
+## im
 
     decode(data, len, name, name_len) -> image | 0
     struct image { uint32_t width; uint32_t height; uint8_t rgba[]; }
@@ -55,7 +55,7 @@ file's bytes until `pdf_close`, so the host keeps them in memory that
 long; DjVuLibre copies them in `djvu_open`. `djvu_error()` names the cause
 of the last trap, as a C string.
 
-## svg
+## svg_simple
 
 Speaks the page ABI of pdf and djvu under `svg_`, a drawing being one
 page:
@@ -75,7 +75,9 @@ its preserveAspectRatio says: 8-bit RGBA, not premultiplied, transparent
 where nothing is drawn. The document copies the file in `svg_open`. A file that is no SVG
 traps, as does an image of no pixel or one past 2^26; `svg_error()` then
 names the `SvgError` of svg.h. The module has no raster decoder: PNG and
-JPEG images inside a drawing are left out.
+JPEG images inside a drawing are left out. Nor has it a decompressor: an
+SVGZ file traps with `SVG_DECOMPRESS`, and a gzipped image inside a drawing
+is left out.
 
 ## magic
 
@@ -93,7 +95,7 @@ first call. 0 is a failure the library noticed itself, which
 
     ./build.sh MODULE OUT_DIR
 
-builds one of `decode`, `decode.simd128`, `pdf`, `djvu`, `magic`, `svg`, `svg.simd128` through
+builds one of `im`, `im.simd128`, `pdf`, `djvu`, `magic`, `svg_simple`, `svg_simple.simd128` through
 IX at the revision pinned in `build.sh` and writes `OUT_DIR/MODULE.wasm.zstd`.
 The release workflow runs the seven in parallel and publishes them as the
 next numeric tag, with their sha256 sums in the notes.
